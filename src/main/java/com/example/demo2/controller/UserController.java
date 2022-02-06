@@ -13,7 +13,6 @@ import java.util.Map;
 
 
 @RestController
-@Slf4j
 public class UserController {
 
     private UserRepository userRepository;
@@ -39,7 +38,8 @@ public class UserController {
     }
 
     @PutMapping("/users/user/{name}")
-    public Mono<Integer> updateUser(@PathVariable String name, @RequestParam String newName) {
+    public Mono<Integer> updateUser(@PathVariable String name,
+                                    @RequestParam String newName) {
         return userRepository.update(name, newName);
     }
 

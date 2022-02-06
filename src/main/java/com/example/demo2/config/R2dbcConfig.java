@@ -10,17 +10,12 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
-import org.springframework.r2dbc.connection.R2dbcTransactionManager;
 import org.springframework.r2dbc.connection.init.ConnectionFactoryInitializer;
 import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
-import org.springframework.r2dbc.core.DatabaseClient;
-import org.springframework.transaction.ReactiveTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Profile("h2")
 @EnableR2dbcRepositories
 @Configuration
-@EnableTransactionManagement
 public class R2dbcConfig extends AbstractR2dbcConfiguration {
 
     @Override
@@ -33,11 +28,6 @@ public class R2dbcConfig extends AbstractR2dbcConfiguration {
     }
 
 
-    @Bean
-    ReactiveTransactionManager transactionManager(ConnectionFactory connectionFactory) {
-        return new R2dbcTransactionManager(connectionFactory);
-    }
-
 
     /** 해당 schema.sql을 h2-console을 이용해서 확인하기 위한 method ,
      * jdbc기반의 h2database이므로 변경되는 데이터들은 반영되어지지 않는다.
@@ -46,9 +36,10 @@ public class R2dbcConfig extends AbstractR2dbcConfiguration {
     public ConnectionFactoryInitializer h2DbInitializer() {
         ConnectionFactoryInitializer initializer = new ConnectionFactoryInitializer();
 
-        /** h2-console 창에서 jdbc:h2:mem:test 로 접속하기 위해서는 ResourceDatabasePopulator가 반드시 필요하다. **/
         ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator();
+
         resourceDatabasePopulator.addScript(new ClassPathResource("schema.sql"));
+
         initializer.setConnectionFactory(connectionFactory());
         initializer.setDatabasePopulator(resourceDatabasePopulator);
         return initializer;
